@@ -54,6 +54,7 @@ const App: React.FC = () => {
   const [isOutlineModalOpen, setIsOutlineModalOpen] = useState(false);
   const [outlineContent, setOutlineContent] = useState('');
   const [isGeneratingOutline, setIsGeneratingOutline] = useState(false);
+  const [lastOutlineContent, setLastOutlineContent] = useState(''); // Keep track of the content that was used to generate the last outline
   
   // State for screen reader announcements
   const [announcement, setAnnouncement] = useState('');
@@ -321,22 +322,33 @@ const App: React.FC = () => {
   // Function to handle creating an outline
   const handleCreateOutline = useCallback(async () => {
       try {
-          const content = generateMarkdownContent();
-          if (!content) {
+          // Always open the modal first for better UX
+          setIsOutlineModalOpen(true);
+          
+          // Generate the current content
+          const currentContent = generateMarkdownContent();
+          if (!currentContent) {
               announce("Cannot create outline. No content available.");
               return;
           }
           
-          // Set loading state
+          // Check if the content has changed since the last generation
+          if (currentContent === lastOutlineContent && outlineContent) {
+              // Content hasn't changed, reuse the existing outline
+              announce("Showing existing outline.");
+              return;
+          }
+          
+          // Content has changed or no previous outline exists, generate a new one
           setOutlineContent("");
-          setIsOutlineModalOpen(true);
           setIsGeneratingOutline(true);
           
           // Generate the outline using Gemini
-          const outline = await generateOutline(sessionTitle || topic || "Untitled", content);
+          const outline = await generateOutline(sessionTitle || topic || "Untitled", currentContent);
           
-          // Update the modal with the response
+          // Update the modal with the response and save the content that generated it
           setOutlineContent(outline);
+          setLastOutlineContent(currentContent);
           announce("Outline generated successfully.");
       } catch (error) {
           console.error("Error creating outline:", error);
@@ -345,7 +357,7 @@ const App: React.FC = () => {
       } finally {
           setIsGeneratingOutline(false);
       }
-  }, [generateMarkdownContent, sessionTitle, topic, announce]);
+  }, [generateMarkdownContent, sessionTitle, topic, announce, lastOutlineContent, outlineContent]);
 
   return (
     <DndProvider backend={HTML5Backend}>
