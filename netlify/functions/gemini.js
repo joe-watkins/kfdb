@@ -22,29 +22,28 @@ export async function handler(event) {
       };
     }
 
-    // Extract parameters from the request
-    const { endpoint, model, contents, config } = requestBody;
+    // Extract model and payload directly
+    const { model, payload } = requestBody;
     
-    if (!endpoint || !model || !contents) {
+    if (!model || !payload) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "Missing required parameters (endpoint, model, contents)" })
+        body: JSON.stringify({ error: "Missing required parameters (model, payload)" })
       };
     }
 
     // Construct API URL with the provided model
-    const apiUrl = `https://generativelanguage.googleapis.com/${endpoint}/models/${model}:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
     
-    // Make request to Gemini API
+    console.log('Making request to Gemini API with payload:', JSON.stringify(payload, null, 2));
+    
+    // Make request to Gemini API exactly as the client would
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        contents,
-        ...(config ? { generationConfig: config } : {})
-      })
+      body: JSON.stringify(payload)
     });
 
     const data = await response.json();

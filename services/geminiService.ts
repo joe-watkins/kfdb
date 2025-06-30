@@ -3,18 +3,41 @@
 const model = "gemini-2.5-flash-preview-04-17";
 
 // Helper function to call our Netlify Function
-async function callGeminiViaNetlifyFunction(contents, config = {}) {
+async function callGeminiViaNetlifyFunction(contents: string, options: any = {}) {
   try {
+    // Prepare the payload exactly as it would be sent to the Gemini API
+    const payload = {
+      contents: [
+        {
+          parts: [
+            { text: contents }
+          ]
+        }
+      ],
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 1024
+      }
+    };
+
+    // Add system instruction if provided
+    if (options.systemInstruction) {
+      payload.systemInstruction = options.systemInstruction;
+    }
+    
+    // Add response MIME type if provided
+    if (options.responseMimeType) {
+      payload.generationConfig.responseMimeType = options.responseMimeType;
+    }
+
     const response = await fetch('/.netlify/functions/gemini', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        endpoint: 'v1',
         model,
-        contents,
-        config
+        payload
       })
     });
     
@@ -22,7 +45,11 @@ async function callGeminiViaNetlifyFunction(contents, config = {}) {
       throw new Error(`API request failed with status ${response.status}`);
     }
     
-    return await response.json();
+    const responseData = await response.json();
+    // Match the format of the Gemini API response
+    return {
+      text: responseData.candidates?.[0]?.content?.parts?.[0]?.text || ""
+    };
   } catch (error) {
     console.error('Error calling Gemini API via Netlify Function:', error);
     throw error;
