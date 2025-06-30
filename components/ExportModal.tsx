@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ClipboardCheckIcon, ClipboardIcon, DeleteIcon } from './icons';
 import ReactMarkdown from 'react-markdown';
 import './markdown-styles.css';
+import LoadingDots from './LoadingDots';
 
 interface ExportModalProps {
     isOpen: boolean;
