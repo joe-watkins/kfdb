@@ -15,6 +15,7 @@ KFDB is a modern web application designed for teachers, coaches, and leaders to 
 ## 🛠️ Tech Stack
 
 -   **Frontend**: React, TypeScript, Tailwind CSS
+-   **Build Tool**: Vite
 -   **AI Engine**: Google Gemini API (`@google/genai`)
 -   **Component Libraries**:
     -   `lucide-react` for icons
@@ -34,32 +35,49 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 1.  **Clone the repository:**
     ```sh
-    git clone https://github.com/your-username/your-repo.git
-    cd your-repo
+    git clone https://github.com/joe-watkins/kfdb.git
+    cd kfdb
     ```
 
-2.  **Provide API Key:**
-    The application is configured to read the Gemini API key from an environment variable `process.env.API_KEY`. In a simple static project setup like this (without a build tool like Vite or Next.js), you'll need to make this variable available to the browser's execution context.
+2.  **Install dependencies:**
+    ```sh
+    npm install
+    ```
 
-    For local development, the simplest way is to replace `process.env.API_KEY` in `services/geminiService.ts` with your actual key as a string.
+3.  **Provide API Key:**
+    The application uses Vite and is configured to read the Gemini API key from an environment variable `VITE_API_KEY`.
 
-    **IMPORTANT**: This is **not secure** for a public repository or production. If you deploy this project, you must use your hosting provider's system (e.g., Vercel, Netlify, Google Cloud) to manage environment variables securely.
+    For local development:
+    - Create a `.env` file in the project root
+    - Add your Gemini API key:
+      ```
+      VITE_API_KEY=your_gemini_api_key_here
+      ```
+
+    For production deployment on platforms like Netlify, set the `VITE_API_KEY` environment variable in your project settings.
+
+    **IMPORTANT**: This is **not secure** for a public repository. The `.env` file is added to `.gitignore` to prevent accidentally committing it. If you deploy this project, you must use your hosting provider's system (e.g., Vercel, Netlify, Google Cloud) to manage environment variables securely.
 
 ### 3. Running the Application
 
-This project is a static site that uses ES modules via an `importmap`. You can run it with any simple local web server. The easiest way is using `npx serve`.
+This project uses Vite as its build tool and development server.
 
-1.  Install `serve` if you haven't already:
+1.  Start the development server:
     ```sh
-    npm install -g serve
+    npm run dev
     ```
 
-2.  Run the server from the project's root directory:
-    ```sh
-    serve
-    ```
+2.  Open your browser and navigate to the URL provided by Vite (typically `http://localhost:5173`).
 
-3.  Open your browser and navigate to the local URL provided by the server (e.g., `http://localhost:3000`).
+### 4. Building for Production
+
+To create a production build:
+
+```sh
+npm run build
+```
+
+This will generate optimized assets in the `dist` directory, which can be deployed to any static hosting service like Netlify, Vercel, or GitHub Pages.
 
 ---
 
@@ -67,4 +85,9 @@ This project is a static site that uses ES modules via an `importmap`. You can r
 
 **NEVER commit your API key to a public Git repository.**
 
-If you follow the local development instructions and hard-code your key, be sure not to commit that change. For production environments, always use a secure method for handling environment variables provided by your hosting platform.
+The project is set up with:
+1. Environment variables using Vite's `.env` file system
+2. A `.gitignore` file that excludes the `.env` file containing your API key
+3. Configuration in `vite.config.ts` to properly expose the environment variable to your application
+
+For production environments, always use a secure method for handling environment variables provided by your hosting platform (such as Netlify's environment variable settings).
