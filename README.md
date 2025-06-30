@@ -1,8 +1,6 @@
-# KFDBe - AI-Powered "Know, Feel, Do, Be" Planner
+# KFDB - AI-Powered "Know, Feel, Do, Be" Planner
 
-KFDBe is a modern web application designed for teachers, coaches, and leaders to structure their sessions using the powerful "Know, Feel, Do, Be" framework. It features a sleek, intuitive interface and an integrated AI assistant (powered by the Google Gemini API) to help brainstorm and populate ideas, turning a blank slate into a structured plan in seconds.
-
-![KFDBe Application Screenshot](https://storage.googleapis.com/aifiles/README_IMAGES/kfdb_screenshot.png)
+KFDB is a modern web application designed for teachers, coaches, and leaders to structure their sessions using the powerful "Know, Feel, Do, Be" framework. It features a sleek, intuitive interface and an integrated AI assistant (powered by the Google Gemini API) to help brainstorm and populate ideas, turning a blank slate into a structured plan in seconds.
 
 ---
 
