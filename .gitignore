@@ -47,3 +47,6 @@ ui-debug.log
 .cache
 .npm
 .eslintcache
+
+# Local Netlify folder
+.netlify
