@@ -33,12 +33,6 @@ async function callGeminiViaNetlifyFunction(contents: string, options: any = {})
     // Response MIME type is not supported in generationConfig
     // We'll handle JSON responses in our parsing logic instead
 
-    // For debugging
-    console.log('Sending request with payload:', JSON.stringify({
-      model,
-      payload
-    }, null, 2));
-
     const response = await fetch('/.netlify/functions/gemini', {
       method: 'POST',
       headers: {
@@ -57,7 +51,6 @@ async function callGeminiViaNetlifyFunction(contents: string, options: any = {})
     }
     
     const responseData = await response.json();
-    console.log('Received response:', JSON.stringify(responseData, null, 2));
     
     // Extract the text from the response based on Gemini API format
     let responseText = "";

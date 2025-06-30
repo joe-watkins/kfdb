@@ -38,14 +38,9 @@ export async function handler(event) {
     // Construct API URL with the provided model
     const apiUrl = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
     
-    console.log(`Making request to Gemini API for model: ${model}`);
+    // Make request to the Gemini API
     
-    // Log the payload for debugging, but strip any sensitive data
-    console.log('Request payload structure:', JSON.stringify({
-      hasContents: !!payload.contents,
-      contentsLength: payload.contents ? payload.contents.length : 0,
-      generationConfig: payload.generationConfig
-    }, null, 2));
+    // Payload is valid, proceed with the request
     
     // Make request to Gemini API exactly as the client would
     const response = await fetch(apiUrl, {
