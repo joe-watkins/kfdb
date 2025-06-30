@@ -9,15 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react-dom": "^19.1.0",
-    "react": "^19.1.0",
+    "@firebase/app": "^0.13.1",
+    "@firebase/auth": "^1.10.7",
+    "@firebase/firestore": "^4.7.17",
     "@google/genai": "^1.7.0",
     "lucide-react": "^0.414.0",
+    "react": "^19.1.0",
     "react-dnd": "16.0.1",
     "react-dnd-html5-backend": "16.0.1",
-    "@firebase/auth": "^1.10.7",
-    "@firebase/app": "^0.13.1",
-    "@firebase/firestore": "^4.7.17"
+    "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
