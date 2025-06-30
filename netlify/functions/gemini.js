@@ -40,6 +40,13 @@ export async function handler(event) {
     
     console.log(`Making request to Gemini API for model: ${model}`);
     
+    // Log the payload for debugging, but strip any sensitive data
+    console.log('Request payload structure:', JSON.stringify({
+      hasContents: !!payload.contents,
+      contentsLength: payload.contents ? payload.contents.length : 0,
+      generationConfig: payload.generationConfig
+    }, null, 2));
+    
     // Make request to Gemini API exactly as the client would
     const response = await fetch(apiUrl, {
       method: 'POST',

@@ -19,19 +19,19 @@ async function callGeminiViaNetlifyFunction(contents: string, options: any = {})
         maxOutputTokens: 1024
       }
     };
-
-    // Add system instruction if provided
+    
+    // For system instruction, we'll include it in the contents array instead
+    // This is the proper way to include system instructions in Gemini API
     if (options.systemInstruction) {
-      payload.systemInstruction = options.systemInstruction;
+      // Add the system instruction as the first message in the conversation
+      payload.contents.unshift({
+        role: "user",
+        parts: [{ text: options.systemInstruction }]
+      });
     }
     
-    // Add response MIME type if provided
-    if (options.responseMimeType) {
-      payload.generationConfig = {
-        ...payload.generationConfig,
-        responseMimeType: options.responseMimeType
-      };
-    }
+    // Response MIME type is not supported in generationConfig
+    // We'll handle JSON responses in our parsing logic instead
 
     // For debugging
     console.log('Sending request with payload:', JSON.stringify({
@@ -58,9 +58,17 @@ async function callGeminiViaNetlifyFunction(contents: string, options: any = {})
     
     const responseData = await response.json();
     console.log('Received response:', JSON.stringify(responseData, null, 2));
-    // Match the format of the Gemini API response
+    
+    // Extract the text from the response based on Gemini API format
+    let responseText = "";
+    
+    if (responseData.candidates && responseData.candidates[0] && 
+        responseData.candidates[0].content && responseData.candidates[0].content.parts) {
+      responseText = responseData.candidates[0].content.parts[0].text || "";
+    }
+    
     return {
-      text: responseData.candidates?.[0]?.content?.parts?.[0]?.text || ""
+      text: responseText
     };
   } catch (error) {
     console.error('Error calling Gemini API via Netlify Function:', error);
@@ -98,9 +106,9 @@ function parseJsonFromText(text: string): any {
 
 
 export const getInitialSuggestions = async (topic: string): Promise<KFDBSuggestions> => {
-    const systemInstruction = `You are an expert curriculum designer and leadership coach specializing in the "Know, Feel, Do, Be" framework. Your sole function is to return valid, minified JSON. Do not include markdown, comments, or any conversational text. Your entire response must be ONLY the JSON object.`;
+    // Combine the instruction and prompt into a single prompt since systemInstruction is not supported
+    const prompt = `You are an expert curriculum designer and leadership coach specializing in the "Know, Feel, Do, Be" framework. Your sole function is to return valid, minified JSON. Do not include markdown, comments, or any conversational text. Your entire response must be ONLY the JSON object.
     
-    const prompt = `
     For the session topic "${topic}", generate a "Know, Feel, Do, Be" plan.
     Create a concise title (3-7 words) and 2-3 distinct ideas for each category.
     
@@ -115,10 +123,7 @@ export const getInitialSuggestions = async (topic: string): Promise<KFDBSuggesti
   `;
 
   try {
-    const response = await callGeminiViaNetlifyFunction(prompt, {
-      systemInstruction,
-      responseMimeType: "application/json",
-    });
+    const response = await callGeminiViaNetlifyFunction(prompt, {});
 
     const parsedData = parseJsonFromText(response.text);
     
@@ -144,9 +149,9 @@ export const getInitialSuggestions = async (topic: string): Promise<KFDBSuggesti
 };
 
 export const getIdeasForCategory = async (topic: string, category: string, existingItems: string[]): Promise<string[]> => {
-    const systemInstruction = `You are an expert curriculum designer specializing in the "Know, Feel, Do, Be" framework. Your sole function is to return valid, minified JSON. Do not include markdown, comments, or any conversational text. Your entire response must be ONLY the JSON object.`;
+    // Combine the instruction and prompt into a single prompt
+    const prompt = `You are an expert curriculum designer specializing in the "Know, Feel, Do, Be" framework. Your sole function is to return valid, minified JSON. Do not include markdown, comments, or any conversational text. Your entire response must be ONLY the JSON object.
 
-    const prompt = `
     The session topic is "${topic}".
     The category is "${category}".
     Existing items are: ${JSON.stringify(existingItems)}.
@@ -160,10 +165,7 @@ export const getIdeasForCategory = async (topic: string, category: string, exist
   `;
 
   try {
-    const response = await callGeminiViaNetlifyFunction(prompt, {
-      systemInstruction,
-      responseMimeType: "application/json",
-    });
+    const response = await callGeminiViaNetlifyFunction(prompt, {});
     
     const parsedData = parseJsonFromText(response.text);
 
