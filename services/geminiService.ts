@@ -1,10 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 
-if (!process.env.API_KEY) {
+if (!process.env.VITE_API_KEY) {
     throw new Error("API_KEY environment variable not set");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.VITE_API_KEY });
 const model = "gemini-2.5-flash-preview-04-17";
 
 interface KFDBSuggestions {
