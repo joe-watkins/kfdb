@@ -26,9 +26,10 @@ export const SparkleIcon: React.FC<{className?: string}> = ({className}) => (
 /**
  * A 'Sparkles' icon from Lucide, for the AI Assistant panel.
  * Accepts an optional className for custom styling.
+ * The icon is marked as decorative with aria-hidden="true"
  */
 export const AssistantIcon: React.FC<{className?: string}> = ({className}) => (
-    <Sparkles className={`h-5 w-5 ${className || ''}`} />
+    <Sparkles className={`h-5 w-5 ${className || ''}`} aria-hidden="true" />
 );
 
 /**
