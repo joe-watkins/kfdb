@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, X, WandSparkles, Sparkles, ArrowUpDown, GripVertical, ArrowUp, ArrowDown, Save, LogIn, LogOut, FolderOpen, FilePlus, Download, ClipboardCopy, ClipboardCheck, Pencil, Check } from 'lucide-react';
+import { Plus, X, WandSparkles, Sparkles, ArrowUpDown, GripVertical, ArrowUp, ArrowDown, Save, LogIn, LogOut, FolderOpen, FilePlus, Download, ClipboardCopy, ClipboardCheck, Pencil, Check, FileText } from 'lucide-react';
 
 /**
  * An 'Add' icon from the Lucide icon library.
@@ -138,4 +138,11 @@ export const EditIcon: React.FC = () => (
  */
 export const CheckIcon: React.FC = () => (
   <Check className="h-5 w-5" strokeWidth={2.5} />
+);
+
+/**
+ * An 'Outline' icon for creating document outlines from content.
+ */
+export const OutlineIcon: React.FC<{className?: string}> = ({className}: {className?: string}) => (
+  <FileText className={`h-5 w-5 ${className || ''}`} strokeWidth={2} />
 );

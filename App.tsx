@@ -6,7 +6,8 @@ import KFDBCard from './components/KFDBCard';
 import AssistantPanel from './components/AssistantPanel';
 import Header from './components/Header';
 import ExportModal from './components/ExportModal';
-import { getInitialSuggestions, getIdeasForCategory } from './services/geminiService';
+import OutlineModal from './components/OutlineModal';
+import { getInitialSuggestions, getIdeasForCategory, generateOutline } from './services/geminiService';
 import LoadingDots from './components/LoadingDots';
 import { SparkleIcon, EditIcon, CheckIcon, DeleteIcon } from './components/icons';
 import LiveRegion from './components/LiveRegion';
@@ -48,6 +49,11 @@ const App: React.FC = () => {
 
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [exportContent, setExportContent] = useState('');
+  
+  // State for outline modal
+  const [isOutlineModalOpen, setIsOutlineModalOpen] = useState(false);
+  const [outlineContent, setOutlineContent] = useState('');
+  const [isGeneratingOutline, setIsGeneratingOutline] = useState(false);
   
   // State for screen reader announcements
   const [announcement, setAnnouncement] = useState('');
@@ -253,6 +259,26 @@ const App: React.FC = () => {
     }
   };
 
+  const handleGenerateOutline = useCallback(async () => {
+    if (!topic.trim() || isAiBusy) return;
+
+    announce('Generating outline. Please wait.');
+    setAssistantMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', content: `Generate an outline for the topic: "${topic}"` }, { id: 'loading', role: 'system', content: loadingContent }]);
+
+    try {
+      const outline = await generateOutline(topic);
+      setOutlineContent(outline);
+      setIsOutlineModalOpen(true);
+      announce('Outline generated successfully.');
+    } catch (error) {
+      console.error(error);
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+      announce(`Sorry, there was an error generating the outline: ${errorMessage}`);
+      setAssistantMessages(prev => [...prev.filter(m => m.id !== 'loading'), { id: crypto.randomUUID(), role: 'system', content: `Sorry, I hit a snag: ${errorMessage}` }]);
+    } finally {
+      setLoadingCategory(null);
+    }
+  }, [topic, isAiBusy, announce]);
 
   const categoryCards = useMemo(() => [
     { category: Category.Know, title: "Know", description: "What should they know?", accent: "cyan" },
@@ -291,12 +317,41 @@ const App: React.FC = () => {
       setExportContent(content);
       setIsExportModalOpen(true);
   }, [generateMarkdownContent]);
+  
+  // Function to handle creating an outline
+  const handleCreateOutline = useCallback(async () => {
+      try {
+          const content = generateMarkdownContent();
+          if (!content) {
+              announce("Cannot create outline. No content available.");
+              return;
+          }
+          
+          // Set loading state
+          setOutlineContent("");
+          setIsOutlineModalOpen(true);
+          setIsGeneratingOutline(true);
+          
+          // Generate the outline using Gemini
+          const outline = await generateOutline(sessionTitle || topic || "Untitled", content);
+          
+          // Update the modal with the response
+          setOutlineContent(outline);
+          announce("Outline generated successfully.");
+      } catch (error) {
+          console.error("Error creating outline:", error);
+          setOutlineContent("Failed to generate outline. Please try again.");
+          announce("Failed to generate outline. Please try again.");
+      } finally {
+          setIsGeneratingOutline(false);
+      }
+  }, [generateMarkdownContent, sessionTitle, topic, announce]);
 
   return (
     <DndProvider backend={HTML5Backend}>
       <LiveRegion announcement={announcement} />
       <div className="min-h-screen flex flex-col">
-        <Header onExport={handleExport} />
+        <Header onExport={handleExport} onCreateOutline={handleCreateOutline} />
         
         <main className="flex-grow p-4 md:p-6 lg:p-8">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -419,6 +474,12 @@ const App: React.FC = () => {
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         content={exportContent}
+      />
+      <OutlineModal
+        isOpen={isOutlineModalOpen}
+        onClose={() => setIsOutlineModalOpen(false)}
+        content={outlineContent}
+        isLoading={isGeneratingOutline}
       />
     </DndProvider>
   );
