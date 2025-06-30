@@ -1,11 +1,33 @@
-import { GoogleGenAI } from "@google/genai";
-
-if (!process.env.VITE_API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-}
-
-const ai = new GoogleGenAI({ apiKey: process.env.VITE_API_KEY });
+// Using Netlify Functions to proxy Gemini API calls instead of direct client-side API access
+// This avoids exposing the API key in client-side code
 const model = "gemini-2.5-flash-preview-04-17";
+
+// Helper function to call our Netlify Function
+async function callGeminiViaNetlifyFunction(contents, config = {}) {
+  try {
+    const response = await fetch('/.netlify/functions/gemini', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        endpoint: 'v1',
+        model,
+        contents,
+        config
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error calling Gemini API via Netlify Function:', error);
+    throw error;
+  }
+}
 
 interface KFDBSuggestions {
   title: string;
@@ -54,13 +76,9 @@ export const getInitialSuggestions = async (topic: string): Promise<KFDBSuggesti
   `;
 
   try {
-    const response = await ai.models.generateContent({
-      model,
-      contents: prompt,
-      config: {
-        systemInstruction,
-        responseMimeType: "application/json",
-      }
+    const response = await callGeminiViaNetlifyFunction(prompt, {
+      systemInstruction,
+      responseMimeType: "application/json",
     });
 
     const parsedData = parseJsonFromText(response.text);
@@ -103,13 +121,9 @@ export const getIdeasForCategory = async (topic: string, category: string, exist
   `;
 
   try {
-    const response = await ai.models.generateContent({
-      model,
-      contents: prompt,
-      config: {
-        systemInstruction,
-        responseMimeType: "application/json",
-      }
+    const response = await callGeminiViaNetlifyFunction(prompt, {
+      systemInstruction,
+      responseMimeType: "application/json",
     });
     
     const parsedData = parseJsonFromText(response.text);

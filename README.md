@@ -44,30 +44,43 @@ Follow these instructions to get a copy of the project up and running on your lo
     npm install
     ```
 
-3.  **Provide API Key:**
-    The application uses Vite and is configured to read the Gemini API key from an environment variable `VITE_API_KEY`.
+3.  **Install the Netlify CLI** (for local development):
+    ```sh
+    npm install -g netlify-cli
+    ```
+
+4.  **Set up your API Key:**
+    This application uses a secure serverless function approach to protect the Gemini API key.
 
     For local development:
     - Create a `.env` file in the project root
     - Add your Gemini API key:
       ```
-      VITE_API_KEY=your_gemini_api_key_here
+      # For Netlify Functions (server-side, secure)
+      GEMINI_API_KEY=your_gemini_api_key_here
       ```
 
-    For production deployment on platforms like Netlify, set the `VITE_API_KEY` environment variable in your project settings.
+    For production deployment:
+    - In your Netlify dashboard, go to Site settings > Environment variables
+    - Add `GEMINI_API_KEY` with your API key as the value
 
-    **IMPORTANT**: This is **not secure** for a public repository. The `.env` file is added to `.gitignore` to prevent accidentally committing it. If you deploy this project, you must use your hosting provider's system (e.g., Vercel, Netlify, Google Cloud) to manage environment variables securely.
+    **Security Note**: This project uses Netlify Functions to proxy API requests to Gemini, keeping your API key secure on the server side rather than exposing it in client-side code.
 
 ### 3. Running the Application
 
-This project uses Vite as its build tool and development server.
+This project uses Vite as its build tool and Netlify Functions for the backend API.
 
-1.  Start the development server:
+1.  Start the development server with Netlify Functions:
     ```sh
-    npm run dev
+    netlify dev
     ```
 
-2.  Open your browser and navigate to the URL provided by Vite (typically `http://localhost:5173`).
+    This will:
+    - Start the Vite development server for the frontend
+    - Run your Netlify Functions locally
+    - Set up the proxy configuration automatically
+
+2.  Open your browser and navigate to the URL provided (typically `http://localhost:8888`)
 
 ### 4. Building for Production
 
@@ -85,9 +98,17 @@ This will generate optimized assets in the `dist` directory, which can be deploy
 
 **NEVER commit your API key to a public Git repository.**
 
-The project is set up with:
-1. Environment variables using Vite's `.env` file system
-2. A `.gitignore` file that excludes the `.env` file containing your API key
-3. Configuration in `vite.config.ts` to properly expose the environment variable to your application
+This project follows best security practices by:
 
-For production environments, always use a secure method for handling environment variables provided by your hosting platform (such as Netlify's environment variable settings).
+1. **Using Netlify Functions as a secure proxy** for all Gemini API requests
+   - Your API key is stored server-side only
+   - Never exposed in client-side code
+   - Not vulnerable to browser inspection or network request analysis
+   
+2. **Proper environment variable handling**
+   - Local: `.env` file (excluded by `.gitignore`)
+   - Production: Netlify environment variables (secure, encrypted)
+
+3. **Zero client-side API key usage**
+   - No more `process.env` variables in browser code
+   - Protected against common frontend security vulnerabilities
