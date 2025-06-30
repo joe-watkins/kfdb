@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ClipboardCheckIcon, ClipboardIcon, DeleteIcon } from './icons';
+import ReactMarkdown from 'react-markdown';
+import './markdown-styles.css';
 
 interface ExportModalProps {
     isOpen: boolean;
@@ -10,6 +12,7 @@ interface ExportModalProps {
 
 const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, content }) => {
     const [isCopied, setIsCopied] = useState(false);
+    const [showFormatted, setShowFormatted] = useState(true);
     const modalRef = useRef<HTMLDivElement>(null);
     const triggerElementRef = useRef<HTMLElement | null>(null);
 
@@ -101,18 +104,61 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, content }) =
                         <DeleteIcon />
                     </button> 
                 </div>
+                
+                {/* View toggle buttons */}
+                {content && (
+                    <div className="px-4 pt-2 pb-1 border-b border-white/10 flex-shrink-0">
+                        <div className="flex space-x-1 bg-gray-800 rounded-md p-0.5 w-fit">
+                            <button
+                                onClick={() => setShowFormatted(true)}
+                                className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                                    showFormatted 
+                                        ? 'bg-gray-600 text-white' 
+                                        : 'text-gray-400 hover:text-gray-300'
+                                }`}
+                            >
+                                Formatted
+                            </button>
+                            <button
+                                onClick={() => setShowFormatted(false)}
+                                className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                                    !showFormatted 
+                                        ? 'bg-gray-600 text-white' 
+                                        : 'text-gray-400 hover:text-gray-300'
+                                }`}
+                            >
+                                Raw Markdown
+                            </button>
+                        </div>
+                    </div>
+                )}
+                
                 <div className="p-4 flex-grow overflow-y-auto relative">
-                    <pre className="bg-gray-800 p-4 rounded-md text-gray-300 text-sm whitespace-pre-wrap break-words scrollbar-hide h-full">
-                        <code>{content || "Nothing to export yet."}</code>
-                    </pre>
-                    <button 
-                        onClick={handleCopy}
-                        className="absolute top-6 right-6 p-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors disabled:opacity-50"
-                        aria-label="Copy to clipboard"
-                        disabled={!content}
-                    >
-                        {isCopied ? <ClipboardCheckIcon /> : <ClipboardIcon />}
-                    </button>
+                    {content ? (
+                        showFormatted ? (
+                            <div className="bg-gray-800 p-4 rounded-md text-gray-300 text-sm prose prose-invert max-w-none">
+                                <ReactMarkdown>{content}</ReactMarkdown>
+                            </div>
+                        ) : (
+                            <pre className="bg-gray-800 p-4 rounded-md text-gray-300 text-sm whitespace-pre-wrap break-words scrollbar-hide h-full">
+                                <code>{content}</code>
+                            </pre>
+                        )
+                    ) : (
+                        <div className="bg-gray-800 p-4 rounded-md text-gray-300 text-sm">
+                            Nothing to export yet.
+                        </div>
+                    )}
+                    
+                    {content && (
+                        <button 
+                            onClick={handleCopy}
+                            className="absolute top-6 right-6 p-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors disabled:opacity-50"
+                            aria-label="Copy to clipboard"
+                        >
+                            {isCopied ? <ClipboardCheckIcon /> : <ClipboardIcon />}
+                        </button>
+                    )}
                 </div>
                 <div className="p-4 border-t border-white/10 flex justify-end gap-3 flex-shrink-0">
                     <button
