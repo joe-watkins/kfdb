@@ -5,6 +5,7 @@ export async function handler(event) {
     const apiKey = process.env.GEMINI_API_KEY;
     
     if (!apiKey) {
+      console.error("API key not configured on server");
       return {
         statusCode: 500,
         body: JSON.stringify({ error: "API key not configured on server" })
@@ -16,6 +17,7 @@ export async function handler(event) {
     try {
       requestBody = JSON.parse(event.body);
     } catch (e) {
+      console.error("Invalid JSON in request body:", e.message);
       return {
         statusCode: 400,
         body: JSON.stringify({ error: "Invalid request body" })
@@ -26,6 +28,7 @@ export async function handler(event) {
     const { model, payload } = requestBody;
     
     if (!model || !payload) {
+      console.error("Missing required parameters:", { model: !!model, payload: !!payload });
       return {
         statusCode: 400,
         body: JSON.stringify({ error: "Missing required parameters (model, payload)" })
@@ -35,7 +38,7 @@ export async function handler(event) {
     // Construct API URL with the provided model
     const apiUrl = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
     
-    console.log('Making request to Gemini API with payload:', JSON.stringify(payload, null, 2));
+    console.log(`Making request to Gemini API for model: ${model}`);
     
     // Make request to Gemini API exactly as the client would
     const response = await fetch(apiUrl, {
@@ -46,18 +49,33 @@ export async function handler(event) {
       body: JSON.stringify(payload)
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini API error response:', response.status, errorText);
+      return {
+        statusCode: response.status,
+        body: JSON.stringify({ 
+          error: `Gemini API returned error: ${response.status}`,
+          details: errorText
+        })
+      };
+    }
+
     const data = await response.json();
     
     // Return response from Gemini API
     return {
-      statusCode: response.status,
+      statusCode: 200,
       body: JSON.stringify(data)
     };
   } catch (error) {
-    console.error('Error calling Gemini API:', error);
+    console.error('Error calling Gemini API:', error.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Error processing request" })
+      body: JSON.stringify({ 
+        error: "Error processing request",
+        message: error.message 
+      })
     };
   }
 }

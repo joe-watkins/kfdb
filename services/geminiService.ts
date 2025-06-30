@@ -1,12 +1,12 @@
 // Using Netlify Functions to proxy Gemini API calls instead of direct client-side API access
 // This avoids exposing the API key in client-side code
-const model = "gemini-2.5-flash-preview-04-17";
+const model = "gemini-1.5-flash"; // Using a standard Gemini model that's definitely available
 
 // Helper function to call our Netlify Function
 async function callGeminiViaNetlifyFunction(contents: string, options: any = {}) {
   try {
     // Prepare the payload exactly as it would be sent to the Gemini API
-    const payload = {
+    const payload: any = {
       contents: [
         {
           parts: [
@@ -27,8 +27,17 @@ async function callGeminiViaNetlifyFunction(contents: string, options: any = {})
     
     // Add response MIME type if provided
     if (options.responseMimeType) {
-      payload.generationConfig.responseMimeType = options.responseMimeType;
+      payload.generationConfig = {
+        ...payload.generationConfig,
+        responseMimeType: options.responseMimeType
+      };
     }
+
+    // For debugging
+    console.log('Sending request with payload:', JSON.stringify({
+      model,
+      payload
+    }, null, 2));
 
     const response = await fetch('/.netlify/functions/gemini', {
       method: 'POST',
@@ -42,10 +51,13 @@ async function callGeminiViaNetlifyFunction(contents: string, options: any = {})
     });
     
     if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+      const errorText = await response.text();
+      console.error('Error response from Netlify Function:', errorText);
+      throw new Error(`API request failed with status ${response.status}: ${errorText}`);
     }
     
     const responseData = await response.json();
+    console.log('Received response:', JSON.stringify(responseData, null, 2));
     // Match the format of the Gemini API response
     return {
       text: responseData.candidates?.[0]?.content?.parts?.[0]?.text || ""
