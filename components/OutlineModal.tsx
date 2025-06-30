@@ -93,7 +93,7 @@ const OutlineModal: React.FC<OutlineModalProps> = ({ isOpen, onClose, content, i
             >
                 <div className="p-4 flex items-center justify-between border-b border-white/10 flex-shrink-0">
                     <div>
-                        <h2 id="outline-modal-title" className="text-xl font-bold text-white">Presentation Outline</h2>
+                        <h2 id="outline-modal-title" className="text-xl font-bold text-white">Presentation Outline (~1-hour)</h2>
                         <p id="outline-modal-description" className="text-sm text-gray-400">AI-generated outline based on your content.</p>
                     </div>
                     <button 

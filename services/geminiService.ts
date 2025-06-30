@@ -177,7 +177,7 @@ export const getIdeasForCategory = async (topic: string, category: string, exist
 
 export const generateOutline = async (topic: string, kfdbContent: string): Promise<string> => {
   // Create a prompt that will generate a presentation outline based on KFDB content
-  const prompt = `Create a presentation outline based on this know, feel, do, be. I want the participants to come out of this being very knowledgeable. Be concise and not too wordy but include the nitty gritty needed to get started with a presentation. Do not mention "Know, Feel, Do, Be" that is just the framework for defining direction. Assume the presentation is 1 hour.
+  const prompt = `Create a presentation outline based on this know, feel, do, be. I want the participants to come out of this being very knowledgeable. Be concise and not too wordy but include the nitty gritty needed to get started with a presentation. Do not mention "Know, Feel, Do, Be" that is just the framework for defining direction. Assume the presentation is ~1 hour.
 
 ${kfdbContent}`;
 
