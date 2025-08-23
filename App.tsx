@@ -8,6 +8,7 @@ import Header from './components/Header';
 import ExportModal from './components/ExportModal';
 import OutlineModal from './components/OutlineModal';
 import { getInitialSuggestions, getIdeasForCategory, generateOutline } from './services/geminiService';
+import { saveToLocalStorage, loadFromLocalStorage, clearLocalStorage } from './services/localStorageService';
 import LoadingDots from './components/LoadingDots';
 import { SparkleIcon, EditIcon, CheckIcon, DeleteIcon } from './components/icons';
 import LiveRegion from './components/LiveRegion';
@@ -41,6 +42,7 @@ const App: React.FC = () => {
   const [topic, setTopic] = useState('');
   const [sessionTitle, setSessionTitle] = useState('');
   const [items, setItems] = useState<KFDBCategories>(initialItems);
+  const [hasLoadedFromStorage, setHasLoadedFromStorage] = useState(false);
   const [assistantMessages, setAssistantMessages] = useState<AssistantMessage[]>(initialMessages);
   
   const [isGeneratingInitial, setIsGeneratingInitial] = useState(false);
@@ -79,6 +81,34 @@ const App: React.FC = () => {
     }, duration);
   }, []);
 
+  // Load from localStorage on mount
+  useEffect(() => {
+    const storedData = loadFromLocalStorage();
+    if (storedData) {
+      setTopic(storedData.topic);
+      setSessionTitle(storedData.sessionTitle);
+      setItems(storedData.items);
+      setHasLoadedFromStorage(true);
+      announce('Session restored from browser storage.');
+    }
+  }, [announce]);
+
+  // Save to localStorage whenever data changes (after initial load)
+  useEffect(() => {
+    if (!hasLoadedFromStorage) return; // Don't save initial empty state
+    
+    const hasContent = topic.trim() || sessionTitle.trim() || 
+      Object.values(items).some(categoryItems => categoryItems.length > 0);
+    
+    if (hasContent) {
+      saveToLocalStorage({
+        topic,
+        sessionTitle,
+        items,
+      });
+    }
+  }, [topic, sessionTitle, items, hasLoadedFromStorage]);
+
   // Cleanup announcement timeout on unmount
   useEffect(() => {
     return () => {
@@ -100,6 +130,7 @@ const App: React.FC = () => {
     if (!text.trim()) return;
     const newItem: ListItemData = { id: crypto.randomUUID(), text };
     setItems(prev => ({ ...prev, [category]: [...prev[category], newItem] }));
+    if (!hasLoadedFromStorage) setHasLoadedFromStorage(true);
   };
 
   const handleDeleteItem = (category: Category, id: string) => {
@@ -142,6 +173,15 @@ const App: React.FC = () => {
     });
   }, []);
 
+  const handleStartOver = useCallback(() => {
+    setTopic('');
+    setSessionTitle('');
+    setItems(initialItems);
+    setAssistantMessages(initialMessages);
+    clearLocalStorage();
+    announce('Session cleared. Ready to start a new session.');
+  }, [announce]);
+
   const fetchInitialSuggestions = useCallback(async () => {
     if (!topic.trim() || isAiBusy) return;
 
@@ -158,17 +198,28 @@ const App: React.FC = () => {
       const suggestions = await getInitialSuggestions(topic);
       setSessionTitle(suggestions.title);
       
-      setItems({
+      const newItems = {
         [Category.Know]: suggestions.know.map(text => ({ id: crypto.randomUUID(), text })),
         [Category.Feel]: suggestions.feel.map(text => ({ id: crypto.randomUUID(), text })),
         [Category.Do]: suggestions.do.map(text => ({ id: crypto.randomUUID(), text })),
         [Category.Be]: suggestions.be.map(text => ({ id: crypto.randomUUID(), text })),
-      });
+      };
+      
+      setItems(newItems);
 
        setAssistantMessages(prev => [
            ...prev.filter(m => m.id !== 'loading'), 
            { id: crypto.randomUUID(), role: 'assistant', content: 'I\'ve populated your lists with some starting ideas. Feel free to refine them!' }
        ]);
+       
+       // Save to localStorage immediately after AI generation
+       saveToLocalStorage({
+         topic,
+         sessionTitle: suggestions.title,
+         items: newItems,
+       });
+       setHasLoadedFromStorage(true);
+       
        announce('Ideas generated and populated successfully.');
     } catch (error) {
       console.error(error);
@@ -260,26 +311,6 @@ const App: React.FC = () => {
     }
   };
 
-  const handleGenerateOutline = useCallback(async () => {
-    if (!topic.trim() || isAiBusy) return;
-
-    announce('Generating outline. Please wait.');
-    setAssistantMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', content: `Generate an outline for the topic: "${topic}"` }, { id: 'loading', role: 'system', content: loadingContent }]);
-
-    try {
-      const outline = await generateOutline(topic);
-      setOutlineContent(outline);
-      setIsOutlineModalOpen(true);
-      announce('Outline generated successfully.');
-    } catch (error) {
-      console.error(error);
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
-      announce(`Sorry, there was an error generating the outline: ${errorMessage}`);
-      setAssistantMessages(prev => [...prev.filter(m => m.id !== 'loading'), { id: crypto.randomUUID(), role: 'system', content: `Sorry, I hit a snag: ${errorMessage}` }]);
-    } finally {
-      setLoadingCategory(null);
-    }
-  }, [topic, isAiBusy, announce]);
 
   const categoryCards = useMemo(() => [
     { category: Category.Know, title: "Know", description: "What should they know?", accent: "cyan" },
@@ -363,7 +394,7 @@ const App: React.FC = () => {
     <DndProvider backend={HTML5Backend}>
       <LiveRegion announcement={announcement} />
       <div className="min-h-screen flex flex-col">
-        <Header onExport={handleExport} onCreateOutline={handleCreateOutline} />
+        <Header onExport={handleExport} onCreateOutline={handleCreateOutline} onStartOver={handleStartOver} />
         
         <main className="flex-grow p-4 md:p-6 lg:p-8">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
