@@ -13,6 +13,7 @@ interface KFDBCardProps {
   items: ListItemData[];
   onAddItem: (category: Category, text: string) => void;
   onDeleteItem: (category: Category, id: string) => void;
+  onEditItem: (category: Category, id: string, newText: string) => void;
   onMoveItem: (category: Category, fromIndex: number, toIndex: number) => void;
   onGetIdeas: (category: Category) => void;
   accent: string;
@@ -41,6 +42,7 @@ const KFDBCard: React.FC<KFDBCardProps> = ({
   items,
   onAddItem,
   onDeleteItem,
+  onEditItem,
   onMoveItem,
   onGetIdeas,
   accent,
@@ -132,6 +134,7 @@ const KFDBCard: React.FC<KFDBCardProps> = ({
                     isFirst={index === 0}
                     isLast={index === items.length - 1}
                     onDelete={() => handleItemDeletion(item.id, index)}
+                    onEdit={(newText: string) => onEditItem(category, item.id, newText)}
                     onMove={(dir) => handleMove(index, dir)}
                     onMoveItem={onMoveItem}
                   />

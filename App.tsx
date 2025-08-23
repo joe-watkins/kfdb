@@ -139,6 +139,17 @@ const App: React.FC = () => {
       [category]: prev[category].filter(item => item.id !== id),
     }));
   };
+
+  const handleEditItem = (category: Category, id: string, newText: string) => {
+    if (!newText.trim()) return;
+    setItems(prev => ({
+      ...prev,
+      [category]: prev[category].map(item => 
+        item.id === id ? { ...item, text: newText.trim() } : item
+      ),
+    }));
+    announce(`Item updated successfully.`);
+  };
   
   const handleAddSuggestedItem = (messageId: string, suggestionId: string) => {
     let suggestionToAdd: Suggestion | undefined;
@@ -497,6 +508,7 @@ const App: React.FC = () => {
                     items={items[category]}
                     onAddItem={handleAddItem}
                     onDeleteItem={handleDeleteItem}
+                    onEditItem={handleEditItem}
                     onMoveItem={handleMoveItem}
                     onGetIdeas={() => fetchCategoryIdeas(category)}
                     accent={accent}

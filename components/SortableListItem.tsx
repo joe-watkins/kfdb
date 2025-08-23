@@ -17,6 +17,7 @@ interface SortableListItemProps {
     category: Category;
     index: number;
     onDelete: () => void;
+    onEdit: (newText: string) => void;
     onMove: (direction: 'up' | 'down') => void;
     onMoveItem: (category: Category, dragIndex: number, hoverIndex: number) => void;
     isFirst: boolean;
