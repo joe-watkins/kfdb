@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Category, type ListItemData } from '../types';
 import SortableListItem from './SortableListItem';
-import { AddIcon, SparkleIcon, SortIcon } from './icons';
+import { AddIcon, SparkleIcon, SortIcon, CheckIcon } from './icons';
 import LoadingDots from './LoadingDots';
 
 interface KFDBCardProps {
@@ -109,14 +109,14 @@ const KFDBCard: React.FC<KFDBCardProps> = ({
           <p className={`text-sm text-gray-400`}>{description}</p>
         </div>
         {items.length > 1 && (
-            <button
-                onClick={() => setIsSortMode(!isSortMode)}
-                aria-pressed={isSortMode}
-                className={`p-2 rounded-md transition-colors ${isSortMode ? `bg-${accent}-400/20 ${text}` : 'text-gray-400 hover:bg-white/10'}`}
-                aria-label={isSortMode ? "Done Sorting" : "Sort Items"}
-            >
-                <SortIcon />
-            </button>
+      <button
+        onClick={() => setIsSortMode(!isSortMode)}
+        aria-pressed={isSortMode}
+        className={`p-2 rounded-md transition-colors ${isSortMode ? `bg-${accent}-400/20 ${text}` : 'text-gray-400 hover:bg-white/10'}`}
+        aria-label={isSortMode ? "Done Sorting" : "Sort Items"}
+      >
+        {isSortMode ? <CheckIcon /> : <SortIcon />}
+      </button>
         )}
       </div>
       <div className="p-4 flex-grow flex flex-col">
