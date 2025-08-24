@@ -49,13 +49,14 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ value, onChange, placeholder })
   return (
     <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
       <div style={{ position: 'relative', flexGrow: 1 }}>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+        <div
+          contentEditable
+          role="textbox"
+          aria-label={placeholder}
+          onInput={(e) => onChange(e.currentTarget.textContent || "")}
           className="w-full px-4 py-2 pr-10 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-transparent placeholder:text-gray-400"
-        />
+          style={{ minHeight: '2rem' }}
+        ></div>
         <button
           type="button"
           onClick={handleVoiceInput}
