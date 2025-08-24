@@ -1,10 +1,9 @@
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Category, type ListItemData } from '../types';
 import SortableListItem from './SortableListItem';
 import { AddIcon, SparkleIcon, SortIcon, CheckIcon } from './icons';
 import LoadingDots from './LoadingDots';
+import VoiceInput from './VoiceInput';
 
 interface KFDBCardProps {
   category: Category;
@@ -151,14 +150,10 @@ const KFDBCard: React.FC<KFDBCardProps> = ({
             <div>
               <label htmlFor={inputId} className="block text-sm font-medium text-gray-300 mb-2">Add a "{title}" item</label>
               <div className="flex items-center gap-2">
-                <input
-                  ref={inputRef}
-                  id={inputId}
-                  type="text"
+                <VoiceInput
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={setInputValue}
                   placeholder="Type a new item..."
-                  className={`flex-grow w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-md text-sm focus:ring-2 ${ring} focus:border-transparent placeholder:text-gray-400`}
                 />
                 <button
                   type="submit"

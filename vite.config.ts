@@ -6,6 +6,7 @@ export default defineConfig(() => {
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
+          'react-icons': path.resolve(__dirname, 'node_modules/react-icons')
         }
       },
       // For local development, proxy requests to Netlify Functions

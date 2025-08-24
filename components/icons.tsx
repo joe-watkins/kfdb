@@ -146,3 +146,23 @@ export const CheckIcon: React.FC = () => (
 export const OutlineIcon: React.FC<{className?: string}> = ({className}: {className?: string}) => (
   <FileText className={`h-5 w-5 ${className || ''}`} strokeWidth={2} />
 );
+
+/**
+ * A 'Microphone' icon for voice input.
+ */
+export const MicrophoneIcon: React.FC<{className?: string}> = ({className}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth="2"
+    stroke="currentColor"
+    className={`h-5 w-5 ${className}`}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 1v10m0 0a4 4 0 004-4V5a4 4 0 00-4-4m0 10a4 4 0 01-4-4V5a4 4 0 014-4m0 14v4m0 0H8m4 0h4"
+    />
+  </svg>
+);

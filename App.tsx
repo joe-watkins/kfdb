@@ -12,6 +12,7 @@ import { saveToLocalStorage, loadFromLocalStorage, clearLocalStorage } from './s
 import LoadingDots from './components/LoadingDots';
 import { SparkleIcon, EditIcon, CheckIcon, DeleteIcon } from './components/icons';
 import LiveRegion from './components/LiveRegion';
+import VoiceInput from './components/VoiceInput';
 
 const initialItems: KFDBCategories = {
   [Category.Know]: [],
@@ -416,13 +417,10 @@ const App: React.FC = () => {
                   <form onSubmit={handleTopicSubmit} className="flex flex-col sm:flex-row sm:items-end gap-3">
                       <div className="flex-grow text-left">
                           <label htmlFor="topic-input" className="block text-sm font-medium text-gray-300 mb-2">Session Topic</label>
-                          <input
-                              id="topic-input"
-                              type="text"
+                          <VoiceInput
                               value={topic}
-                              onChange={(e) => setTopic(e.target.value)}
+                              onChange={setTopic}
                               placeholder="e.g., Q3 Leadership Summit"
-                              className="w-full px-4 py-3 bg-[#0d1117] text-white border-2 border-gray-700 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all placeholder:text-gray-400"
                           />
                       </div>
                       <button 
@@ -470,14 +468,10 @@ const App: React.FC = () => {
                             Edit Session Title
                           </label>
                           <div className="flex items-center gap-2">
-                            <input
-                              ref={titleInputRef}
-                              id="session-title-input"
-                              type="text"
+                            <VoiceInput
                               value={editedTitle}
-                              onChange={(e) => setEditedTitle(e.target.value)}
-                              onKeyDown={handleTitleKeyDown}
-                              className="flex-grow w-full text-2xl font-bold tracking-tight bg-gray-800 text-white border-2 border-cyan-400 rounded-lg p-2 focus:ring-2 focus:ring-cyan-300 focus:outline-none transition-all"
+                              onChange={setEditedTitle}
+                              placeholder="Edit Session Title"
                             />
                             <button
                               onClick={handleSaveTitle}

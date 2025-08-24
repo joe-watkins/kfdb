@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { type ListItemData } from '../types';
 import { DeleteIcon, GripVerticalIcon, ArrowUpIcon, ArrowDownIcon, EditIcon, CheckIcon } from './icons';
+import VoiceInput from './VoiceInput';
 
 interface ListItemProps {
   item: ListItemData;
@@ -74,15 +75,10 @@ const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(({
         </span>
       )}
       {isEditing ? (
-        <input
-          ref={inputRef}
-          type="text"
+        <VoiceInput
           value={editText}
-          onChange={(e) => setEditText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onBlur={handleSaveEdit}
-          className="text-gray-300 flex-1 bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-          aria-label={`Edit item: ${item.text}`}
+          onChange={setEditText}
+          placeholder={`Edit item: ${item.text}`}
         />
       ) : (
         <p className="text-gray-300 flex-1 break-words">{item.text}</p>
