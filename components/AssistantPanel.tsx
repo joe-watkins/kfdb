@@ -11,10 +11,15 @@ interface AssistantPanelProps {
 
 const AssistantPanel: React.FC<AssistantPanelProps> = ({ messages, onAddSuggestedItem }) => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
+  const previousMessageCountRef = useRef<number>(0);
   const panelTitleId = "assistant-panel-title";
 
   useEffect(() => {
-    endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Only scroll if messages were actually added (not on initial render)
+    if (messages.length > previousMessageCountRef.current) {
+      endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+    previousMessageCountRef.current = messages.length;
   }, [messages]);
 
   const getMessageBubble = (message: AssistantMessage) => {
