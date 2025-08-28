@@ -155,6 +155,7 @@ const App: React.FC = () => {
   const handleAddSuggestedItem = (messageId: string, suggestionId: string) => {
     let suggestionToAdd: Suggestion | undefined;
 
+    // First, find the suggestion and remove it from the messages
     setAssistantMessages(prevMessages => {
       const newMessages = prevMessages.map(msg => {
         if (msg.id === messageId && msg.suggestions) {
@@ -166,13 +167,14 @@ const App: React.FC = () => {
         }
         return msg;
       });
-
-      if (suggestionToAdd) {
-        handleAddItem(suggestionToAdd.category, suggestionToAdd.text);
-      }
       
       return newMessages;
     });
+
+    // Then, add the item to the main list (outside of the state setter)
+    if (suggestionToAdd) {
+      handleAddItem(suggestionToAdd.category, suggestionToAdd.text);
+    }
   };
 
   const handleMoveItem = useCallback((category: Category, fromIndex: number, toIndex: number) => {
