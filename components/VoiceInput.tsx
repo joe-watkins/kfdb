@@ -1,14 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { BsMic, BsStopCircle } from 'react-icons/bs';
 
 interface VoiceInputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  autoFocus?: boolean;
 }
 
-const VoiceInput: React.FC<VoiceInputProps> = ({ value, onChange, placeholder }) => {
+export interface VoiceInputHandle {
+  focus: () => void;
+}
+
+const VoiceInput = forwardRef<VoiceInputHandle, VoiceInputProps>(({ value, onChange, placeholder, autoFocus = false }, ref) => {
   const [isRecording, setIsRecording] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Function to position cursor at end of content
+  const positionCursorAtEnd = () => {
+    if (!contentRef.current) return;
+    
+    const element = contentRef.current;
+    element.focus();
+    
+    // Position cursor at the end
+    const range = document.createRange();
+    const selection = window.getSelection();
+    
+    if (element.childNodes.length > 0) {
+      // If there are child nodes, position at the end of the last text node
+      const lastNode = element.childNodes[element.childNodes.length - 1];
+      if (lastNode.nodeType === Node.TEXT_NODE) {
+        range.setStart(lastNode, lastNode.textContent?.length || 0);
+      } else {
+        range.setStartAfter(lastNode);
+      }
+    } else {
+      // If no child nodes, position at the start of the element
+      range.setStart(element, 0);
+    }
+    
+    range.collapse(true);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  };
+
+  // Expose focus method to parent components
+  useImperativeHandle(ref, () => ({
+    focus: positionCursorAtEnd
+  }), []);
+
+  // Set initial content and sync when value prop changes
+  useEffect(() => {
+    if (contentRef.current && contentRef.current.textContent !== value) {
+      contentRef.current.textContent = value;
+    }
+  }, [value]);
+
+  // Auto focus on mount if autoFocus is true
+  useEffect(() => {
+    if (autoFocus) {
+      // Small delay to ensure the element is rendered and ready
+      const timer = setTimeout(positionCursorAtEnd, 10);
+      return () => clearTimeout(timer);
+    }
+  }, [autoFocus]);
 
   const handleVoiceInput = () => {
     if (!('webkitSpeechRecognition' in window)) {
@@ -50,6 +106,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ value, onChange, placeholder })
     <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
       <div style={{ position: 'relative', flexGrow: 1 }}>
         <div
+          ref={contentRef}
           contentEditable
           role="textbox"
           aria-label={placeholder}
@@ -82,6 +139,8 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ value, onChange, placeholder })
       </div>
     </div>
   );
-};
+});
+
+VoiceInput.displayName = 'VoiceInput';
 
 export default VoiceInput;
