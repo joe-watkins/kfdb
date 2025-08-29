@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { type AssistantMessage } from '../types';
 import { AssistantIcon } from './icons';
@@ -32,7 +31,7 @@ const AssistantPanel: React.FC<AssistantPanelProps> = ({ messages, onAddSuggeste
       <div className="bg-gray-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg flex flex-col h-[calc(100vh-8rem)] max-h-[700px]">
         <div className="p-4 border-b border-white/10 flex items-center gap-2">
           <AssistantIcon className="text-cyan-400" />
-          <h3 id={panelTitleId} className="text-lg font-bold text-white">AI Assistant</h3>
+          <h3 id={panelTitleId} className="text-lg font-bold text-white">Assistant</h3>
         </div>
         <div 
             className="flex-grow p-4 overflow-y-auto scrollbar-hide"

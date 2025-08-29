@@ -441,7 +441,7 @@ const App: React.FC = () => {
                          ) : (
                            <span className="flex items-center justify-center gap-2">
                              <SparkleIcon />
-                             AI Start
+                             Start
                            </span>
                          )}
                       </button>
