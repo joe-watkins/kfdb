@@ -114,7 +114,7 @@ const SessionsModal: React.FC<SessionsModalProps> = ({ isOpen, onClose, onLoadSe
                     <h2 id="sessions-modal-title" className="text-xl font-bold text-white">My Sessions</h2>
                     <p id="sessions-modal-description" className="text-sm text-gray-400">Select a session to load or delete.</p>
                 </div>
-                <div className="p-4 overflow-y-auto flex-grow">
+                <div className="p-4 overflow-y-auto flex-grow" tabIndex={0}>
                     {isLoading && <p className="text-center text-gray-400">Loading sessions...</p>}
                     {error && <p className="text-center text-red-400">{error}</p>}
                     {!isLoading && !error && sessions.length === 0 && (

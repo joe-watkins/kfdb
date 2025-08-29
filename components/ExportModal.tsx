@@ -134,7 +134,7 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, content }) =
                     </div>
                 )}
                 
-                <div className="p-4 flex-grow overflow-y-auto relative">
+                <div className="p-4 flex-grow overflow-y-auto relative" tabIndex={0}>
                     {content ? (
                         showFormatted ? (
                             <div className="bg-gray-800 p-4 rounded-md text-gray-300 text-sm prose prose-invert max-w-none">

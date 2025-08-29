@@ -134,7 +134,7 @@ const OutlineModal: React.FC<OutlineModalProps> = ({ isOpen, onClose, content, i
                     </div>
                 )}
                 
-                <div className="p-4 flex-grow overflow-y-auto relative">
+                <div className="p-4 flex-grow overflow-y-auto relative" tabIndex={0}>
                     {isLoading ? (
                         <div className="flex items-center justify-center h-48">
                             <div className="text-lg text-gray-400 flex items-center">

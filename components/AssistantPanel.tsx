@@ -38,6 +38,7 @@ const AssistantPanel: React.FC<AssistantPanelProps> = ({ messages, onAddSuggeste
             className="flex-grow p-4 overflow-y-auto scrollbar-hide"
             role="log"
             aria-live="polite"
+            tabIndex={0}
         >
           <div className="flex flex-col gap-4">
             {messages.map(message => (
