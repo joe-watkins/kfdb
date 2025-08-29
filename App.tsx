@@ -166,13 +166,14 @@ const App: React.FC = () => {
         }
         return msg;
       });
-
-      if (suggestionToAdd) {
-        handleAddItem(suggestionToAdd.category, suggestionToAdd.text);
-      }
       
       return newMessages;
     });
+
+    // Add the item after updating messages to prevent race conditions
+    if (suggestionToAdd) {
+      handleAddItem(suggestionToAdd.category, suggestionToAdd.text);
+    }
   };
 
   const handleMoveItem = useCallback((category: Category, fromIndex: number, toIndex: number) => {
