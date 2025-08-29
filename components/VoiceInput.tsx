@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { BsMic, BsStopCircle } from 'react-icons/bs';
 
 interface VoiceInputProps {
@@ -9,6 +9,14 @@ interface VoiceInputProps {
 
 const VoiceInput: React.FC<VoiceInputProps> = ({ value, onChange, placeholder }) => {
   const [isRecording, setIsRecording] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Set initial content and sync when value prop changes
+  useEffect(() => {
+    if (contentRef.current && contentRef.current.textContent !== value) {
+      contentRef.current.textContent = value;
+    }
+  }, [value]);
 
   const handleVoiceInput = () => {
     if (!('webkitSpeechRecognition' in window)) {
@@ -50,6 +58,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ value, onChange, placeholder })
     <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
       <div style={{ position: 'relative', flexGrow: 1 }}>
         <div
+          ref={contentRef}
           contentEditable
           role="textbox"
           aria-label={placeholder}
