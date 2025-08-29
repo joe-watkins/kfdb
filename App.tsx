@@ -153,12 +153,16 @@ const App: React.FC = () => {
   };
   
   const handleAddSuggestedItem = (messageId: string, suggestionId: string) => {
-    let suggestionToAdd: Suggestion | undefined;
+    // First, find the suggestion from current messages
+    const currentMessage = assistantMessages.find(msg => msg.id === messageId);
+    const suggestionToAdd = currentMessage?.suggestions?.find(s => s.id === suggestionId);
 
+    if (!suggestionToAdd) return;
+
+    // Remove the suggestion from the messages
     setAssistantMessages(prevMessages => {
-      const newMessages = prevMessages.map(msg => {
+      return prevMessages.map(msg => {
         if (msg.id === messageId && msg.suggestions) {
-          suggestionToAdd = msg.suggestions.find(s => s.id === suggestionId);
           return {
             ...msg,
             suggestions: msg.suggestions.filter(s => s.id !== suggestionId),
@@ -166,13 +170,10 @@ const App: React.FC = () => {
         }
         return msg;
       });
-
-      if (suggestionToAdd) {
-        handleAddItem(suggestionToAdd.category, suggestionToAdd.text);
-      }
-      
-      return newMessages;
     });
+
+    // Add the item to the main list
+    handleAddItem(suggestionToAdd.category, suggestionToAdd.text);
   };
 
   const handleMoveItem = useCallback((category: Category, fromIndex: number, toIndex: number) => {
