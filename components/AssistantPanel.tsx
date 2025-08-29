@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { type AssistantMessage } from '../types';
 import { AssistantIcon } from './icons';
 
@@ -10,17 +10,7 @@ interface AssistantPanelProps {
 }
 
 const AssistantPanel: React.FC<AssistantPanelProps> = ({ messages, onAddSuggestedItem }) => {
-  const endOfMessagesRef = useRef<HTMLDivElement>(null);
-  const previousMessageCountRef = useRef<number>(messages.length);
   const panelTitleId = "assistant-panel-title";
-
-  useEffect(() => {
-    // Only scroll if messages were actually added (not on initial render)
-    if (messages.length > previousMessageCountRef.current) {
-      endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-    previousMessageCountRef.current = messages.length;
-  }, [messages]);
 
   const getMessageBubble = (message: AssistantMessage) => {
     if (!message.content) return null;
@@ -70,7 +60,6 @@ const AssistantPanel: React.FC<AssistantPanelProps> = ({ messages, onAddSuggeste
                 )}
               </div>
             ))}
-            <div ref={endOfMessagesRef} />
           </div>
         </div>
       </div>
