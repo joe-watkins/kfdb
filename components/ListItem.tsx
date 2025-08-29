@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { type ListItemData } from '../types';
 import { DeleteIcon, GripVerticalIcon, ArrowUpIcon, ArrowDownIcon, EditIcon, CheckIcon } from './icons';
-import VoiceInput from './VoiceInput';
+import VoiceInput, { VoiceInputHandle } from './VoiceInput';
 
 interface ListItemProps {
   item: ListItemData;
@@ -27,12 +27,15 @@ const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(({
 }, ref) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(item.text);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const voiceInputRef = useRef<VoiceInputHandle>(null);
 
   useEffect(() => {
     if (isEditing) {
-      inputRef.current?.focus();
-      inputRef.current?.select();
+      // Focus the VoiceInput component when editing starts
+      const timer = setTimeout(() => {
+        voiceInputRef.current?.focus();
+      }, 10);
+      return () => clearTimeout(timer);
     }
   }, [isEditing]);
 
@@ -76,6 +79,7 @@ const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(({
       )}
       {isEditing ? (
         <VoiceInput
+          ref={voiceInputRef}
           value={editText}
           onChange={setEditText}
           placeholder={`Edit item: ${item.text}`}

@@ -12,7 +12,7 @@ import { saveToLocalStorage, loadFromLocalStorage, clearLocalStorage } from './s
 import LoadingDots from './components/LoadingDots';
 import { SparkleIcon, EditIcon, CheckIcon, DeleteIcon } from './components/icons';
 import LiveRegion from './components/LiveRegion';
-import VoiceInput from './components/VoiceInput';
+import VoiceInput, { VoiceInputHandle } from './components/VoiceInput';
 
 const initialItems: KFDBCategories = {
   [Category.Know]: [],
@@ -68,8 +68,8 @@ const App: React.FC = () => {
   const [editedTitle, setEditedTitle] = useState('');
 
   // Refs for focus management
-  const titleInputRef = useRef<HTMLInputElement>(null);
   const editButtonRef = useRef<HTMLButtonElement>(null);
+  const voiceInputRef = useRef<VoiceInputHandle>(null);
   
   // Announce messages to screen readers
   const announce = useCallback((message: string, duration: number = 4000) => {
@@ -123,7 +123,11 @@ const App: React.FC = () => {
   // Effect to focus input on edit start
   useEffect(() => {
     if (isEditingTitle) {
-      titleInputRef.current?.select();
+      // Focus the VoiceInput component when editing starts
+      const timer = setTimeout(() => {
+        voiceInputRef.current?.focus();
+      }, 10);
+      return () => clearTimeout(timer);
     }
   }, [isEditingTitle]);
 
@@ -470,6 +474,7 @@ const App: React.FC = () => {
                           </label>
                           <div className="flex items-center gap-2">
                             <VoiceInput
+                              ref={voiceInputRef}
                               value={editedTitle}
                               onChange={setEditedTitle}
                               placeholder="Edit Session Title"
