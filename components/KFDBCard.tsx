@@ -30,7 +30,7 @@ const accentColors: { [key: string]: { border: string; text: string; ring: strin
 const accentButtonColors: { [key: string]: string } = {
   cyan: 'bg-cyan-800 hover:bg-cyan-700 text-white focus:ring-cyan-400',
   rose: 'bg-rose-700 hover:bg-rose-600 text-white focus:ring-rose-400',
-  amber: 'bg-amber-600 hover:bg-amber-500 text-white focus:ring-amber-400',
+  amber: 'bg-amber-700 hover:bg-amber-600 text-white focus:ring-amber-400',
   teal: 'bg-teal-800 hover:bg-teal-700 text-white focus:ring-teal-400',
 };
 
