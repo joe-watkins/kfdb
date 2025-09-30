@@ -436,7 +436,7 @@ const App: React.FC = () => {
                       </div>
                       <button 
                           type="submit"
-                          aria-disabled={!topic.trim() || isAiBusy}
+                          aria-disabled={(!topic.trim() || isAiBusy) ? 'true' : 'false'}
                           className={`px-6 py-3 bg-green-700 text-white font-bold rounded-lg shadow-lg shadow-green-700/20 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0d1117] focus:ring-green-600 transition-all ${(!topic.trim() || isAiBusy) ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
                          {isGeneratingInitial ? (
