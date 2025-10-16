@@ -36,7 +36,7 @@ export async function handler(event) {
     }
 
     // Construct API URL with the provided model
-    const apiUrl = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     
     // Make request to the Gemini API
     
